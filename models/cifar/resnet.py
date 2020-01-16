@@ -45,7 +45,7 @@ class BasicBlock(nn.Module):
         if self.downsample is not None:
             residual = self.downsample(x)
 
-        #out += residual
+        out += residual
         out = self.relu(out)
 
         return out
@@ -89,7 +89,36 @@ class Bottleneck(nn.Module):
 
         return out
 
+class Myblock(nn.Module):
+    expansion = 1
 
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
+        super(BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        #out += residual
+        out = self.relu(out)
+
+        return out
 class ResNet(nn.Module):
 
     def __init__(self, depth, num_classes=1000, block_name='BasicBlock'):
@@ -103,6 +132,10 @@ class ResNet(nn.Module):
             assert (depth - 2) % 9 == 0, 'When use bottleneck, depth should be 9n+2, e.g. 20, 29, 47, 56, 110, 1199'
             n = (depth - 2) // 9
             block = Bottleneck
+        elif block_name.lower() == 'myblock':
+            assert (depth - 2) % 6 == 0, 'When use basicblock, depth should be 6n+2, e.g. 20, 32, 44, 56, 110, 1202'
+            n = (depth - 2) // 6
+            block = Myblock           
         else:
             raise ValueError('block_name shoule be Basicblock or Bottleneck')
 
