@@ -93,7 +93,7 @@ class Myblock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(BasicBlock, self).__init__()
+        super(Myblock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
@@ -103,7 +103,7 @@ class Myblock(nn.Module):
         self.stride = stride
 
     def forward(self, x):
-        residual = x
+        #residual = x
 
         out = self.conv1(x)
         out = self.bn1(out)
@@ -112,8 +112,8 @@ class Myblock(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
-        if self.downsample is not None:
-            residual = self.downsample(x)
+        #if self.downsample is not None:
+        #    residual = self.downsample(x)
 
         #out += residual
         out = self.relu(out)
